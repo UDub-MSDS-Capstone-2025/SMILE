@@ -36,7 +36,7 @@ args = parser.parse_args()
 sampled_images = []
 
 
-def generate_with_retries(model_name, sampled_images, max_retries=5):
+def generate_with_retries(model_name, sampled_images, max_retries=7):
     for attempt in range(max_retries):
         try:
             return generate_prompt(model_name, sampled_images)  # Attempt API call
