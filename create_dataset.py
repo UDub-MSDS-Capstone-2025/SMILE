@@ -31,6 +31,8 @@ def save_to_json_file(data, json_file="output.json"):
                 existing_data = []
     else:
         existing_data = []
+    last_id = existing_data[-1]["conversation_id"] if existing_data else 0
+    data["conversation_id"] = last_id + 1
 
     # Append the new data
     existing_data.append(data)

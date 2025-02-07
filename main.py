@@ -1,4 +1,7 @@
 import argparse
+import time
+import random
+import google.api_core
 from llm_prompt import generate_prompt
 from image_sampling import sample_from_folder, sample_from_cluster
 from create_dataset import image_to_base64
@@ -32,6 +35,18 @@ parser.add_argument(
 args = parser.parse_args()
 sampled_images = []
 
+
+def generate_with_retries(model_name, sampled_images, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            return generate_prompt(model_name, sampled_images)  # Attempt API call
+        except google.api_core.exceptions.ResourceExhausted:
+            wait_time = (2**attempt) + random.uniform(0, 1)  # Exponential Backoff
+            print(f"Quota exceeded. Retrying in {wait_time:.2f} seconds...")
+            time.sleep(wait_time)
+    raise Exception("Max retries reached. Unable to complete request.")
+
+
 for i in range(args.num_datapoints):
     print(f"Generating datapoint {i + 1} of {args.num_datapoints}")
     if args.sampling == "sample_from_folder":
@@ -43,7 +58,7 @@ for i in range(args.num_datapoints):
             )
         sampled_images = sample_from_cluster(args.images_file_path, args.num_clusters)
 
-    output_text = generate_prompt("gemini-1.5-flash", sampled_images)
+    output_text = generate_with_retries("gemini-1.5-flash", sampled_images)
     images_for_model = [img[0] for img in sampled_images]
     image_names = [img[1] for img in sampled_images]
     # Convert images to base64 for inline embedding
@@ -61,5 +76,5 @@ for i in range(args.num_datapoints):
 
     # Save to JSON file
     save_to_json_file(conversation_entry, json_file="human_bot_conversation.json")
-
     print(f"Conversation {i} saved to human_bot_conversation.json.")
+    time.sleep(4)
