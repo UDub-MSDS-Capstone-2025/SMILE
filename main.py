@@ -18,6 +18,9 @@ parser.add_argument(
     "--images_file_path", type=str, help="Path to the images folder or dataset"
 )
 parser.add_argument(
+    "--save_to", type=str, help="Name of output JSON file", default="output.json"
+)
+parser.add_argument(
     "--sampling",
     type=str,
     choices=["sample_from_folder", "sample_from_cluster"],
@@ -75,6 +78,6 @@ for i in range(args.num_datapoints):
     }
 
     # Save to JSON file
-    save_to_json_file(conversation_entry, json_file="human_bot_conversation.json")
+    save_to_json_file(conversation_entry, json_file=args.save_to)
     print(f"Conversation {i} saved to human_bot_conversation.json.")
     time.sleep(4)
