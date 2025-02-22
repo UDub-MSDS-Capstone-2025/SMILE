@@ -1,32 +1,51 @@
-import json
-import time
-import google.generativeai as genai
 import os
+import json
 import re
+
 
 # Load JSON file
 def load_json(json_file):
+    """
+    Loads a JSON file from the specified path.
+
+    :param json_file: Path to the JSON file.
+    :return: Parsed JSON data as a dictionary.
+    :raises FileNotFoundError: If the JSON file does not exist.
+    """
     if os.path.exists(json_file):
         with open(json_file, "r", encoding="utf-8") as file:
             return json.load(file)
     else:
         raise FileNotFoundError(f"JSON file not found: {json_file}")
 
+
 # Save JSON file
 def save_json(data, output_file):
+    """
+    Saves data to a JSON file at the specified path.
+
+    :param data: Data to be saved in JSON format.
+    :param output_file: Path to the output JSON file.
+    """
     with open(output_file, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=4)
+
 
 # Extract JSON from Gemini response
 def extract_valid_json(response):
     """
     Extracts valid JSON from a raw Gemini response, removing extra formatting like code blocks.
+
+    :param response: Raw response from Gemini API.
+    :return: Extracted JSON data as a dictionary, or None if extraction fails.
     """
     # Remove triple backticks and "json" keyword if present
     response = response.strip().replace("```json", "").replace("```", "").strip()
 
     # Extract JSON using regex
-    json_match = re.search(r"\{.*\}", response, re.DOTALL)  # Match everything between `{}`
+    json_match = re.search(
+        r"\{.*\}", response, re.DOTALL
+    )  # Match everything between `{}`
 
     if json_match:
         try:
@@ -42,9 +61,12 @@ def extract_valid_json(response):
 def generate_gemini_prompt(conversation_text):
     """
     Generates a detailed evaluation prompt for Gemini with stricter context differentiation.
+
+    :param conversation_text: The chatbot conversation text to be evaluated.
+    :return: A formatted evaluation prompt string.
     """
     return f"""
-    You are an AI evaluator trained to assess chatbot conversations. Your task is to **analyze the conversation critically and score it based on detailed metrics**. 
+    You are an AI evaluator trained to assess chatbot conversations. Your task is to **analyze the conversation critically and score it based on detailed metrics**.
 
     **Evaluation Criteria (Score: 0-10, where 10 = best quality, 0 = very poor quality):**
     1. **Relevance** - Does the chatbot’s response align with the conversation context?
@@ -64,7 +86,7 @@ def generate_gemini_prompt(conversation_text):
     - If the chatbot response is weak, give it a **low score (0-4)** and explain why.
     - If the chatbot response is excellent, give it a **high score (8-10)** and explain why.
     - If the chatbot response is average, score **5-7** with a moderate explanation.
-    
+
     ** OUTPUT FORMAT (STRICTLY FOLLOW THIS STRUCTURE):**
     ```json
     {{

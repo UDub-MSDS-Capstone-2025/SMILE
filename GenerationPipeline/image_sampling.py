@@ -11,7 +11,10 @@ from sklearn.cluster import KMeans
 def sample_from_folder(folder_path, min_images=1, max_images=5):
     """
     Randomly samples between min_images and max_images from the specified folder.
+
     :param folder_path: Path to the folder containing images.
+    :param min_images: Minimum number of images to sample.
+    :param max_images: Maximum number of images to sample.
     :return: List of tuples containing PIL Image objects and their filenames.
     """
     all_images = [
@@ -28,8 +31,15 @@ def sample_from_folder(folder_path, min_images=1, max_images=5):
     ]
 
 
-# Function to extract CLIP embeddings for images
 def get_clip_embeddings(image_paths, model, preprocess):
+    """
+    Extracts CLIP embeddings for a list of image paths.
+
+    :param image_paths: List of paths to the images.
+    :param model: Pretrained CLIP model.
+    :param preprocess: Preprocessing function for the CLIP model.
+    :return: Tuple containing an array of embeddings and a list of valid image paths.
+    """
     embeddings = []
     valid_paths = []
 
@@ -47,6 +57,13 @@ def get_clip_embeddings(image_paths, model, preprocess):
 
 
 def sample_from_cluster(folder_path, num_clusters):
+    """
+    Samples images from clusters created using CLIP embeddings and KMeans clustering.
+
+    :param folder_path: Path to the folder containing images.
+    :param num_clusters: Number of clusters to create.
+    :return: List of tuples containing PIL Image objects and their filenames.
+    """
     clustered_csv_path = "clustered_images.csv"
 
     if os.path.exists(clustered_csv_path):

@@ -1,30 +1,45 @@
 import json
 import argparse
-import os
+
 
 def merge_json_files(input_files, output_file):
-    
+    """
+    Merges multiple JSON dataset files into one with continuous conversation IDs.
+
+    This function reads multiple JSON files, merges their contents into a single list,
+    and assigns continuous conversation IDs starting from 1. The merged data is then
+    saved to the specified output file.
+
+    :param input_files: List of paths to the input JSON files.
+    :param output_file: Path to the output JSON file.
+    """
     merged_data = []
     current_id = 1  # Start conversation IDs from 1
 
     for file in input_files:
         with open(file, "r", encoding="utf-8") as f:
             data = json.load(f)
-        
+
         for entry in data:
             entry["conversation_id"] = current_id  # Assign a new continuous ID
             merged_data.append(entry)
             current_id += 1  # Increment ID for the next entry
-    
-    
+
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(merged_data, f, indent=4)
 
-    print(f"Merged {len(input_files)} files into '{output_file}' with {len(merged_data)} continuous conversation IDs.")
+    print(
+        f"Merged {len(input_files)} files into '{output_file}' with {len(merged_data)} continuous conversation IDs."
+    )
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Merge multiple JSON dataset files into one with continuous IDs.")
-    parser.add_argument("--input_files", nargs="+", required=True, help="List of JSON files to merge.")
+    parser = argparse.ArgumentParser(
+        description="Merge multiple JSON dataset files into one with continuous IDs."
+    )
+    parser.add_argument(
+        "--input_files", nargs="+", required=True, help="List of JSON files to merge."
+    )
     parser.add_argument("--output_file", required=True, help="Output JSON file path.")
 
     args = parser.parse_args()

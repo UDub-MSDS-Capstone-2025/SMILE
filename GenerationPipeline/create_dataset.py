@@ -1,6 +1,4 @@
 import os
-import random
-from PIL import Image
 import base64
 from io import BytesIO
 import json
@@ -8,6 +6,12 @@ import json
 
 # Function to convert image to base64
 def image_to_base64(image):
+    """
+    Converts an image to a base64 encoded string.
+
+    :param image: PIL Image object to be converted.
+    :return: Base64 encoded string of the image.
+    """
     buffer = BytesIO()
     image.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode()
@@ -16,6 +20,7 @@ def image_to_base64(image):
 def save_to_json_file(data, json_file="output.json"):
     """
     Save the conversation data to a JSON file, appending new runs.
+
     :param data: The new conversation data to save.
     :param json_file: The path to the JSON file.
     """

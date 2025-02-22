@@ -4,8 +4,16 @@ from dotenv import load_dotenv
 
 
 def generate_prompt(model_name, sampled_images):
-    """ """
+    """
+    Generates a dialogue prompt using the Gemini API based on sampled images.
 
+    This function configures the Gemini API with the provided API key, constructs a system instruction
+    for generating dialogues, and uses the model to generate a conversation between a human and an assistant.
+
+    :param model_name: Name of the Gemini model to use for generating the dialogue.
+    :param sampled_images: List of tuples containing PIL Image objects and their filenames.
+    :return: Generated dialogue as a string with image references.
+    """
     load_dotenv()
     API_KEY = os.getenv("GEMINI_API_KEY")
     genai.configure(api_key=API_KEY)
