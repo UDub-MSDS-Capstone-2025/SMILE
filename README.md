@@ -14,6 +14,7 @@ Create a benchmark dataset for assessing model performance in adhering to polici
 This repository contains scripts and utilities for generating synthetic data for multimodal large language models (LLMs). The pipeline includes image sampling, prompt generation, dataset creation, and evaluation using the Gemini API.
 
 ## Directory Structure
+```
 GenerationPipeline/
 ├── EvaluationPipeline/
 │ ├── evaluation.py
@@ -28,7 +29,7 @@ GenerationPipeline/
 ├── merge_json_datasets.py
 └── README.md
 └── requirements.txt
-
+```
 
 ## Installation
 
