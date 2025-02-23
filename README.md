@@ -1,6 +1,13 @@
 # GenerationPipeline
 
-Repo to contain code for the generation pipeline for synthetic data generation for multimodal LLMs.
+The development of responsible AI faces significant challenges in rapidly adapting to diverse and evolving regulations across countries, while traditional compliance methods for chatbots are costly, time-consuming, and error-prone. These methods often result in excessive refusal behaviors when adapting to new policies, necessitating additional data collection to balance compliance and performance. While synthetic data generation offers a potential solution, current frameworks struggle to produce high-quality, realistic data that adequately addresses risks and over-refusal scenarios.
+
+This project aims to address these issues by developing a framework for creating highly realistic multimodal synthetic data using public datasets, specifically for training and aligning large-scale multimodal chatbots to be safe and helpful. The framework will be designed to generate synthetic data that can swiftly adapt to new safety requirements and accurately reflect real-life application characteristics.
+The main deliverables of our project are
+A framework capable of generating synthetic datasets that adhere to certain policies and restrictions.
+An evaluation metric to assess the quality of the generated dataset.
+Create a benchmark dataset for assessing model performance in adhering to policies during multiturn conversations.
+
 
 ## Overview
 
