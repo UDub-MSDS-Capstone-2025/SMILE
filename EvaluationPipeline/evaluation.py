@@ -54,7 +54,11 @@ def evaluate_conversation_with_gemini(conversation_text, max_retries=7, initial_
 
     prompt = generate_gemini_prompt(conversation_text)  # Generate prompt
     model = genai.GenerativeModel(
-        "gemini-1.5-flash", generation_config={"max_output_tokens": 500}
+        "gemini-1.5-flash",
+        generation_config={
+            "max_output_tokens": 500,
+            "response_mime_type": "application/json",
+        },
     )
 
     retries = 0
