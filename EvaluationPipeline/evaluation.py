@@ -1,9 +1,13 @@
-import google.generativeai as genai
+import os
 import time
+from dotenv import load_dotenv
+import google.generativeai as genai
 from Utils.json_utils import extract_valid_json, generate_gemini_prompt
 
-# Configure API key (Replace with your actual key)
-genai.configure(api_key="YOUR_KEY")
+# Configure API key
+load_dotenv()
+API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=API_KEY)
 
 
 # Function to evaluate the dataset
