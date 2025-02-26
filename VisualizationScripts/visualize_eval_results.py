@@ -16,6 +16,9 @@ def calculate_average_scores(data):
         np.mean([conv["evaluation_scores"][category]["score"] for conv in data])
         for category in categories
     ]
+    # Print average scores for each category
+    for category, avg_score in zip(categories, average_scores):
+        print(f"Category: {category}, Average Score: {avg_score:.2f}")
     return categories, average_scores
 
 
@@ -45,6 +48,12 @@ def visualize_radar_chart(data):
     plt.show()
 
 
+def save_outliers_to_file(outlier_ids, filename="outliers.txt"):
+    with open(filename, "w") as file:
+        for conv_id in outlier_ids:
+            file.write(f"{conv_id}\n")
+
+
 def visualize_outliers(data):
     """
     Visualizes the number of outliers in each category.
@@ -61,20 +70,21 @@ def visualize_outliers(data):
         for category in categories
     }
 
+    outlier_ids = []
     outliers = {
         category: [
-            score
-            for score in scores[category]
+            (conv["conversation_id"], score)
+            for conv, score in zip(data, scores[category])
             if score
             < np.percentile(scores[category], 25)
-            - 3.0
+            - 1.5
             * (
                 np.percentile(scores[category], 75)
                 - np.percentile(scores[category], 25)
             )
             or score
             > np.percentile(scores[category], 75)
-            + 3.0
+            + 1.5
             * (
                 np.percentile(scores[category], 75)
                 - np.percentile(scores[category], 25)
@@ -83,9 +93,13 @@ def visualize_outliers(data):
         for category in categories
     }
 
+    for category, values in outliers.items():
+        outlier_ids.extend([conv_id for conv_id, _ in values])
+
     outliers_exist = any(len(v) > 0 for v in outliers.values())
 
     if outliers_exist:
+        save_outliers_to_file(set(outlier_ids))
         plt.figure(figsize=(8, 6))
         plt.bar(outliers.keys(), [len(v) for v in outliers.values()], color="red")
         plt.title("Outlier Counts Per Category")
