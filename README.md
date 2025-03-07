@@ -1,4 +1,4 @@
-# GenerationPipeline
+# SMILE - Synthetic Multi-turn interactions for Learning Ethics
 
 The development of responsible AI faces significant challenges in rapidly adapting to diverse and evolving regulations across countries, while traditional compliance methods for chatbots are costly, time-consuming, and error-prone. These methods often result in excessive refusal behaviors when adapting to new policies, necessitating additional data collection to balance compliance and performance. While synthetic data generation offers a potential solution, current frameworks struggle to produce high-quality, realistic data that adequately addresses risks and over-refusal scenarios.
 
