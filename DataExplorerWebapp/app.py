@@ -5,6 +5,7 @@ import base64
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+import gdown
 
 
 # ----------------- APP CONFIG -----------------
@@ -59,19 +60,29 @@ elif page == "📊 Dataset Explorer":
 
     # Define dataset file paths based on selection
     dataset_paths = {
-        "Anime": "../Final_Datasets/anime.json",
-        "Celeb": "../Final_Datasets/celeb.json",
-        "Meme": "../Final_Datasets/meme.json",
-        "Clustered": "../Final_Datasets/clustering.json",
-        "Combined": "../Final_Datasets/combined_folder.json"
+        # "Anime": "../Final_Datasets/anime.json",
+        # "Celeb": "../Final_Datasets/celeb.json",
+        # "Meme": "../Final_Datasets/meme.json",
+        # "Clustered": "../Final_Datasets/clustering.json",
+        # "Combined": "../Final_Datasets/combined_folder.json"
+        "Anime": "18EA2dgaMPxuJ1VGeYYgfp9TXXyjmLuIK",
+        "Celeb": "1zhmP7QrD_ZZN8Mm5ekHZMPyVmwN877D_",
+        "Meme": "1SzE0BKiOo7xV7R7D1Vr30pnoKTcyoXqu",
+        "Clustered": "1Dz25PN-54OYPD0ZZ9fb9apGC40Z0bK6-",
+        "Combined": "196X5cOhQu-KRyyUHxAGyNynTu38oR-Jh"
     }
 
     evaluation_paths = {
-        "Anime": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
-        "Celeb": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
-        "Meme": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
-        "Clustered": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
-        "Combined": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json"
+        # "Anime": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
+        # "Celeb": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
+        # "Meme": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
+        # "Clustered": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json",
+        # "Combined": "../Evaluation_result/clustering_part1_200_baisakhi_evaluation_results0224.json"
+        "Anime": "1mwxYkfKN6ACy-zr-xPlFDhe2YCqmC9oU",
+        "Celeb": "1Srcb3wWA1khv2ZQMSt8oRMqSjTmiLlqz",
+        "Meme": "1HZtLo8iJo2rz32eJ8lVBYiZ6zo3H6C4W",
+        "Clustered": "154nbfikh9VuPnER-XNxoo3ureVNKF-0o",
+        "Combined": "1bVFfXtQBCfku3R3JZpAPM76nEpimF9AD"
     }
 
     # ----------------- DATA LOADING FUNCTIONS -----------------
@@ -79,26 +90,57 @@ elif page == "📊 Dataset Explorer":
     # def load_conversation_data(json_file):
     #     with open(json_file, "r") as file:
     #         return pd.json_normalize(json.load(file), sep="_")
-    def load_conversation_data(json_file, chunk_size=500):
+
+    @st.cache_data
+    def download_from_gdrive(file_id):
+        """Downloads a file from Google Drive and returns its local path."""
+        url = f"https://drive.google.com/uc?id={file_id}"
+        output = f"temp_{file_id}.json"  # Unique temp filename
+        gdown.download(url, output, quiet=False)
+        return output
+
+    def load_conversation_data(file_id, chunk_size=500):
         """
         Lazily loads large conversation datasets in chunks to prevent memory overflow.
         Returns only the first chunk.
         """
+        # Read from local
+        # with open(json_file, "r") as file:
+        #     data = json.load(file)  # Load JSON normally
+    
+        # df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
+        # return df.iloc[:chunk_size]  # Load only the first `chunk_size` rows
+
+        # Read from google drive
+        json_file = download_from_gdrive(file_id)
+    
         with open(json_file, "r") as file:
             data = json.load(file)  # Load JSON normally
-    
+
         df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
         return df.iloc[:chunk_size]  # Load only the first `chunk_size` rows
 
     @st.cache_data
-    def load_evaluation_data(json_file):
+    def load_evaluation_data(file_id):
+        #Read from local
+        # with open(json_file, "r") as file:
+        #     data = json.load(file)
+        
+        # for entry in data:
+        #     for key, value in entry["evaluation_scores"].items():
+        #         entry["evaluation_scores"][key] = value["score"]  # Keep only scores
+
+        # read from google drive
+        """Loads evaluation data and keeps only the scores."""
+        json_file = download_from_gdrive(file_id)
+
         with open(json_file, "r") as file:
             data = json.load(file)
         
         for entry in data:
             for key, value in entry["evaluation_scores"].items():
                 entry["evaluation_scores"][key] = value["score"]  # Keep only scores
-        
+
         return pd.json_normalize(data, sep="_")
 
     @st.cache_data
@@ -260,3 +302,5 @@ elif page == "📊 Dataset Explorer":
 
     else:
         st.warning("⚠️ No data matches your filters.")
+
+
