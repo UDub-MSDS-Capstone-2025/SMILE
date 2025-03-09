@@ -101,29 +101,51 @@ elif page == "📊 Dataset Explorer":
             gdown.download(url, output, quiet=False)
         return output
 
-    def load_conversation_data(file_id, chunk_size=5000):
-        """
-        Lazily loads large conversation datasets in chunks to prevent memory overflow.
-        Returns only the first chunk.
-        """
-        # Read from local
-        # with open(json_file, "r") as file:
-        #     data = json.load(file)  # Load JSON normally
+    # def load_conversation_data(file_id, chunk_size=5000):
+    #     """
+    #     Lazily loads large conversation datasets in chunks to prevent memory overflow.
+    #     Returns only the first chunk.
+    #     """
+    #     # Read from local
+    #     # with open(json_file, "r") as file:
+    #     #     data = json.load(file)  # Load JSON normally
     
-        # df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
-        # return df.iloc[:chunk_size]  # Load only the first `chunk_size` rows
+    #     # df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
+    #     # return df.iloc[:chunk_size]  # Load only the first `chunk_size` rows
 
-        # Read from google drive
-        json_file = download_from_gdrive(file_id)
+    #     # Read from google drive
+    #     json_file = download_from_gdrive(file_id)
     
+    #     with open(json_file, "r") as file:
+    #         data = json.load(file)  # Load JSON normally
+
+    #     df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
+    #     # Convert list columns to strings for caching (Fixes Pandas Hashing Issue)
+    #     # for col in df.columns:
+    #     #     if df[col].apply(lambda x: isinstance(x, list)).any():
+    #     #         df[col] = df[col].apply(lambda x: json.dumps(x) if isinstance(x, list) else x)
+    
+    #     return df.iloc[:chunk_size]  # Load only the first chunk
+
+    @st.cache_data
+    def load_conversation_data(file_id, chunk_size=5000, max_rows=1000):
+        """
+        Lazily loads a large JSON dataset from Google Drive in chunks to avoid memory issues.
+        - Reads only a portion (max_rows) of the dataset.
+        """
+        json_file = download_from_gdrive(file_id)  # Download dataset
+    
+        data = []
         with open(json_file, "r") as file:
-            data = json.load(file)  # Load JSON normally
-
+            for i, line in enumerate(file):  # Read JSONL line by line (streaming)
+                if i >= max_rows:  # Stop after `max_rows`
+                    break
+                try:
+                    data.append(json.loads(line.strip()))  # Convert JSONL line to dictionary
+                except json.JSONDecodeError:
+                    continue  # Skip any corrupted lines
+    
         df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
-        # Convert list columns to strings for caching (Fixes Pandas Hashing Issue)
-        # for col in df.columns:
-        #     if df[col].apply(lambda x: isinstance(x, list)).any():
-        #         df[col] = df[col].apply(lambda x: json.dumps(x) if isinstance(x, list) else x)
     
         return df.iloc[:chunk_size]  # Load only the first chunk
         
