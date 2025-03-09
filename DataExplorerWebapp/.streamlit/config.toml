@@ -1,2 +1,9 @@
 [server]
-maxMessageSize = 50000
+runOnSave = true
+headless = true
+maxMessageSize = 500000
+enableCORS = false
+enableXsrfProtection = false
+baseUrlPath = ""
+[client]
+timeout = 300  # Increase timeout to 5 minutes
