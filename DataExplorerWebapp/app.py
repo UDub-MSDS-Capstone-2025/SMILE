@@ -118,7 +118,16 @@ elif page == "📊 Dataset Explorer":
     
         with open(json_file, "r") as file:
             data = json.load(file)  # Load JSON normally
-
+        data = []
+        with open(json_file, "r") as file:
+            for i, line in enumerate(file):  # Read JSONL line by line (streaming)
+                if i >= max_rows:  # Stop after `max_rows`
+                    break
+                try:
+                    data.append(json.loads(line.strip()))  # Convert JSONL line to dictionary
+                except json.JSONDecodeError:
+                    continue  # Skip any corrupted lines
+                    
         df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
         # Convert list columns to strings for caching (Fixes Pandas Hashing Issue)
         # for col in df.columns:
