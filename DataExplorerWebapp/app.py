@@ -175,7 +175,7 @@ elif page == "📊 Dataset Explorer":
     evaluation_data = load_evaluation_data(evaluation_paths[dataset_category])
 
     # Merge evaluation scores into conversation data
-    merged_data = conversation_data.merge(evaluation_data, on="conversation_id", how="left")
+    merged_data = conversation_data.merge(evaluation_data, on="conversation_id", how="inner")
 
     # ----------------- FILTERING OPTIONS -----------------
     st.sidebar.header("🔍 Filter Options")
