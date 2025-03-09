@@ -96,7 +96,8 @@ elif page == "📊 Dataset Explorer":
         """Downloads a file from Google Drive and returns its local path."""
         url = f"https://drive.google.com/uc?id={file_id}"
         output = f"temp_{file_id}.json"  # Unique temp filename
-        gdown.download(url, output, quiet=False)
+        if not os.path.exists(output):  # Download only if not already present
+            gdown.download(url, output, quiet=False)
         return output
 
     def load_conversation_data(file_id, chunk_size=5000):
