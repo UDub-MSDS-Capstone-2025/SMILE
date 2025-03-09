@@ -15,20 +15,31 @@ This repository contains scripts and utilities for generating synthetic data for
 
 ## Directory Structure
 ```
-GenerationPipeline/
+SMILE/
 ├── EvaluationPipeline/
-│ ├── evaluation.py
-│ └── main.py
+│   ├── evaluation.py
+│   └── main.py
+│
 ├── GenerationPipeline/
-│ ├── create_dataset.py
-│ ├── image_sampling.py
-│ ├── llm_prompt.py
-│ └── main.py
+│   ├── create_dataset.py
+│   ├── image_sampling.py
+│   ├── llm_prompt.py
+│   └── main.py
+│
 ├── Utils/
-├── json_utils.py
-├── merge_json_datasets.py
-└── README.md
+│   ├── json_utils.py
+│   └── merge_json_datasets.py
+│
+├── VisualizationScripts/
+│   ├── main.py
+│   └── visualize_eval_results.py
+│
+├── .env
+├── .gitignore
+├── LICENSE
+├── README.md
 └── requirements.txt
+
 ```
 
 ## Installation
