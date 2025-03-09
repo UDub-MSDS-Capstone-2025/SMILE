@@ -121,9 +121,9 @@ elif page == "📊 Dataset Explorer":
 
         df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
         # Convert list columns to strings for caching (Fixes Pandas Hashing Issue)
-        for col in df.columns:
-            if df[col].apply(lambda x: isinstance(x, list)).any():
-                df[col] = df[col].apply(lambda x: json.dumps(x) if isinstance(x, list) else x)
+        # for col in df.columns:
+        #     if df[col].apply(lambda x: isinstance(x, list)).any():
+        #         df[col] = df[col].apply(lambda x: json.dumps(x) if isinstance(x, list) else x)
     
         return df.iloc[:chunk_size]  # Load only the first chunk
         
