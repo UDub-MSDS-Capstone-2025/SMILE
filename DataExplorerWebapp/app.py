@@ -99,7 +99,7 @@ elif page == "📊 Dataset Explorer":
         gdown.download(url, output, quiet=False)
         return output
 
-    def load_conversation_data(file_id, chunk_size=500):
+    def load_conversation_data(file_id, chunk_size=5000):
         """
         Lazily loads large conversation datasets in chunks to prevent memory overflow.
         Returns only the first chunk.
@@ -118,7 +118,13 @@ elif page == "📊 Dataset Explorer":
             data = json.load(file)  # Load JSON normally
 
         df = pd.json_normalize(data, sep="_")  # Convert JSON to DataFrame
-        return df.iloc[:chunk_size]  # Load only the first `chunk_size` rows
+        # Convert list columns to strings for caching (Fixes Pandas Hashing Issue)
+        for col in df.columns:
+            if df[col].apply(lambda x: isinstance(x, list)).any():
+                df[col] = df[col].apply(lambda x: json.dumps(x) if isinstance(x, list) else x)
+    
+        return df.iloc[:chunk_size]  # Load only the first chunk
+        
 
     @st.cache_data
     def load_evaluation_data(file_id):
