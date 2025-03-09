@@ -101,7 +101,7 @@ elif page == "📊 Dataset Explorer":
             gdown.download(url, output, quiet=False)
         return output
 
-    def load_conversation_data(file_id, chunk_size=5000):
+    def load_conversation_data(file_id, chunk_size=5000, max_rows=1000):
         """
         Lazily loads large conversation datasets in chunks to prevent memory overflow.
         Returns only the first chunk.
