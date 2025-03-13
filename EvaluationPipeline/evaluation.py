@@ -217,6 +217,7 @@ def eval_dataset_hf_models(conversations):
                 "Creativity": {"score": creativity_score, "explanation": creativity_explanation}
             }
         })
+        print("Successfully evaluated conversation", idx)
     
     return results
 
