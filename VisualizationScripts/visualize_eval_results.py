@@ -35,16 +35,20 @@ def visualize_radar_chart(data):
     values = average_scores + average_scores[:1]
     angles += angles[:1]
 
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={"projection": "polar"})
+    fig, ax = plt.subplots(figsize=(12, 12), subplot_kw={"projection": "polar"})
     ax.set_theta_offset(np.pi / 2)
     ax.set_theta_direction(-1)
     ax.fill(angles, values, color="skyblue", alpha=0.4, edgecolor="blue", linewidth=2)
     ax.plot(angles, values, color="blue", linewidth=2)
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, fontsize=10, fontweight="bold")
+    ax.set_xticklabels(categories, fontsize=12, fontweight="bold")
     ax.set_yticks(np.arange(0, 11, 2))
-    ax.set_yticklabels([str(y) for y in np.arange(0, 11, 2)])
-    ax.set_title("Radar Chart of Average Scores", pad=20)
+    ax.set_yticklabels(
+        [str(y) for y in np.arange(0, 11, 2)], fontsize=10, fontweight="bold"
+    )
+    ax.set_title(
+        "Radar Chart of Average Scores", pad=20, fontsize=16, fontweight="bold"
+    )
     plt.show()
 
 
