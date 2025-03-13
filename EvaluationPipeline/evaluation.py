@@ -3,14 +3,14 @@ import time
 from dotenv import load_dotenv
 import google.generativeai as genai
 from Utils.json_utils import extract_valid_json, generate_gemini_prompt
+import Utils.hf_models as hf
 
 # Configure API key
 load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 
-
-# Function to evaluate the dataset
+# Function to evaluate the dataset with Gemini
 def evaluate_dataset(conversations):
     """
     Evaluates a dataset of conversations using the Gemini API.
@@ -157,3 +157,66 @@ def evaluate_conversation_with_gemini(conversation_text, max_retries=7, initial_
             "explanation": "Evaluation uncertain due to API error.",
         },
     }
+
+
+def eval_dataset_hf_models(conversations):
+    """
+    Evaluates a dataset of conversations with evaluation functions using transformer models from HuggingFace.
+
+    This function iterates over a list of conversation entries, evaluates each conversation
+    using the evaluation functions from Utils.hf_models, and collects the evaluation results.
+
+    :param conversations: List of conversation entries. Each entry is expected to be a dictionary
+                          with at least a "conversation" key containing the conversation text.
+    :return: List of dictionaries containing evaluation results. Each dictionary includes
+             "conversation_id" and "evaluation_scores".
+    """
+    results = []
+    past_responses = []  # Stores previous bot responses for creativity evaluation
+
+    for idx, conversation_data in enumerate(conversations, 1):
+        conversation_text = conversation_data.get("conversation", "")
+        turns = conversation_text.split("\n\n")  # Split turns by double newlines
+
+        # Extract all user prompts and bot responses
+        user_prompts = [
+            t.replace("HUMAN:", "").replace("[HUMAN]:", "").strip() 
+            for t in turns if "HUMAN:" in t or "[HUMAN]:" in t
+        ]
+        bot_responses = [
+            t.replace("BOT:", "").replace("[BOT]:", "").strip() 
+            for t in turns if "BOT:" in t or "[BOT]:" in t
+        ]
+
+        # Extract images from JSON (if present)
+        image_tag_mapping = conversation_data.get("image_tag_mapping", {})
+        encoded_images = conversation_data.get("images", [])
+
+        # Apply evaluations
+        relevance_score, relevance_explanation = hf.evaluate_relevance(user_prompts, bot_responses)
+        coherence_score, coherence_explanation = hf.evaluate_coherence(conversation_text)
+        factual_accuracy_score, factual_accuracy_explanation = hf.evaluate_factual_accuracy(bot_responses)
+        bias_toxicity_score, bias_toxicity_explanation = hf.evaluate_bias_toxicity(bot_responses)
+        fluency_score, fluency_explanation = hf.evaluate_fluency(bot_responses)
+        image_alignment_score, image_alignment_explanation = hf.evaluate_image_alignment(bot_responses, encoded_images, image_tag_mapping)
+        creativity_score, creativity_explanation = hf.evaluate_creativity(bot_responses, past_responses)
+
+        # Store past responses for creativity comparison
+        past_responses.extend(bot_responses)
+
+        # Store results
+        results.append({
+            "conversation_id": idx,
+            "evaluation_scores": {
+                "Relevance": {"score": relevance_score, "explanation": relevance_explanation},
+                "Coherence": {"score": coherence_score, "explanation": coherence_explanation},
+                "Factual Accuracy": {"score": factual_accuracy_score, "explanation": factual_accuracy_explanation},
+                "Bias & Toxicity": {"score": bias_toxicity_score, "explanation": bias_toxicity_explanation},
+                "Fluency": {"score": fluency_score, "explanation": fluency_explanation},
+                "Image Alignment": {"score": image_alignment_score, "explanation": image_alignment_explanation},
+                "Creativity": {"score": creativity_score, "explanation": creativity_explanation}
+            }
+        })
+    
+    return results
+

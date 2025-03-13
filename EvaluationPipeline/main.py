@@ -4,7 +4,7 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from evaluation import evaluate_dataset
+from evaluation import evaluate_dataset, eval_dataset_hf_models
 from Utils.json_utils import load_json, save_json
 
 
@@ -30,6 +30,13 @@ def main():
         default="evaluation_results.json",
         help="Output file for evaluated scores",
     )
+    parser.add_argument(
+        "--method",
+        type=str,
+        choices=["gemini", "hf_models"],
+        default="gemini",
+        help="Evaluation method to use",
+    )
 
     args = parser.parse_args()
 
@@ -37,12 +44,18 @@ def main():
     conversations = load_json(args.dataset_path)
 
     # Evaluate dataset
-    evaluation_results = evaluate_dataset(conversations)
+    if args.method == "gemini":
+        evaluation_results = evaluate_dataset(conversations)
+    elif args.method == "hf_models":
+        evaluation_results = eval_dataset_hf_models(conversations)
+    else:
+        raise ValueError(
+            "Invalid evaluation methods."
+        )
 
     # Save results
     save_json(evaluation_results, args.output_path)
     print(f"Evaluation completed. Results saved in {args.output_path}")
-
 
 if __name__ == "__main__":
     main()
