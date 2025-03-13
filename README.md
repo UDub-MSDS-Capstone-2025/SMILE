@@ -28,7 +28,8 @@ SMILE/
 │
 ├── Utils/
 │   ├── json_utils.py
-│   └── merge_json_datasets.py
+│   ├── merge_json_datasets.py
+|   └── hf_models.py
 │
 ├── VisualizationScripts/
 │   ├── main.py
@@ -98,10 +99,11 @@ The evaluation script evaluation.py in the EvaluationPipeline directory evaluate
 #### Command-line Arguments
 - `--dataset_path`: Path to the JSON dataset file.
 - `--output_path`: Path to the output file where evaluated scores will be saved (default: evaluation_results.json).
+- `--method`: Evaluation method to use (`gemini` or `hf_models`).
 
 #### Example
 ```sh
-python EvaluationPipeline/main.py --dataset_path dataset.json --output_path evaluation_results.json
+python EvaluationPipeline/main.py --dataset_path dataset.json --output_path evaluation_results.json --method gemini
 ```
 
 ## Contributing
